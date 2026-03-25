@@ -60,12 +60,44 @@
             height: 50vh;
             width: 100%;
         }
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        body.dark-mode header {
+            background-color: #1e1e1e;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+        body.dark-mode .container {
+            background-color: #1e1e1e;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+        }
+        body.dark-mode .stat-card {
+            background-color: #2c2c2c;
+            border-color: #444;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        body.dark-mode .stat-title {
+            color: #b0bec5;
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            outline: none;
+        }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Wood Pellets Price Tracker</h1>
+    <button class="theme-toggle" id="theme-toggle" title="Toggle Dark Mode">🌙</button>
 </header>
 
 <div class="container">
@@ -90,6 +122,36 @@
 </div>
 
 <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️';
+    }
+
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        const isDark = body.classList.contains('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        themeToggle.textContent = isDark ? '☀️' : '🌙';
+        updateChartTheme(isDark);
+    });
+
+    function updateChartTheme(isDark) {
+        if (typeof chart !== 'undefined') {
+            const textColor = isDark ? '#ffffff' : '#666';
+            const gridColor = isDark ? '#444' : '#ecf0f1';
+            
+            chart.options.plugins.legend.labels.color = textColor;
+            chart.options.scales.y.ticks.color = textColor;
+            chart.options.scales.x.ticks.color = textColor;
+            chart.options.scales.y.title.color = textColor;
+            chart.options.scales.y.grid.color = gridColor;
+            chart.update();
+        }
+    }
+
     const chartData = {"BalticWoodTrade": {"2026-03-25": 258.38}, "BalticWoodTrade - GABBY": {"2026-03-25": 263.25}, "BalticWoodTrade - GABBY PLUS": {"2026-03-25": 258.38}, "Stali": {"2026-03-25": 254.99}};
     
     // Sort dates
@@ -126,8 +188,12 @@
     if(lastGabby) document.getElementById('gabby-val').innerText = lastGabby + ' €';
     if(lastStali) document.getElementById('stali-val').innerText = lastStali + ' €';
 
+    const isDarkInit = document.body.classList.contains('dark-mode');
+    const textColorInit = isDarkInit ? '#ffffff' : '#666';
+    const gridColorInit = isDarkInit ? '#444' : '#ecf0f1';
+
     const ctx = document.getElementById('priceChart').getContext('2d');
-    new Chart(ctx, {
+    const chart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: dates,
@@ -182,17 +248,19 @@
                     }
                 },
                 legend: {
-                    labels: { font: { size: 14 } }
+                    labels: { color: textColorInit, font: { size: 14 } }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: false,
-                    title: { display: true, text: 'Price (€)' },
-                    grid: { color: '#ecf0f1' }
+                    title: { display: true, text: 'Price (€)', color: textColorInit },
+                    grid: { color: gridColorInit },
+                    ticks: { color: textColorInit }
                 },
                 x: {
-                    grid: { display: false }
+                    grid: { display: false },
+                    ticks: { color: textColorInit }
                 }
             }
         }
