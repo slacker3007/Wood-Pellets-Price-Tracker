@@ -8,8 +8,8 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7fa;
-            color: #333;
+            background-color: #121212;
+            color: #e0e0e0;
             margin: 0;
             padding: 0;
             display: flex;
@@ -17,22 +17,22 @@
             align-items: center;
         }
         header {
-            background-color: #2c3e50;
+            background-color: #1f2937;
             color: white;
             width: 100%;
             padding: 20px 0;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
         }
         h1 { margin: 0; font-size: 24px; }
         .container {
             width: 90%;
             max-width: 1000px;
             margin: 40px auto;
-            background: white;
+            background: #1e1e1e;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
         }
         .stats {
             display: flex;
@@ -42,54 +42,23 @@
             gap: 15px;
         }
         .stat-card {
-            background: #fdfdfd;
-            border: 1px solid #eee;
+            background: #2d2d2d;
+            border: 1px solid #444;
             border-radius: 8px;
             padding: 20px;
             flex: 1;
             min-width: 200px;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
             transition: transform 0.2s;
         }
         .stat-card:hover { transform: translateY(-2px); }
-        .stat-title { font-size: 14px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 1px;}
-        .stat-value { font-size: 32px; font-weight: bold; color: #2ecc71; margin-top: 10px;}
+        .stat-title { font-size: 14px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;}
+        .stat-value { font-size: 32px; font-weight: bold; color: #4ade80; margin-top: 10px;}
         .chart-container {
             position: relative;
             height: 50vh;
             width: 100%;
-        }
-        body.dark-mode {
-            background-color: #121212;
-            color: #ffffff;
-        }
-        body.dark-mode header {
-            background-color: #1e1e1e;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-        }
-        body.dark-mode .container {
-            background-color: #1e1e1e;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-        }
-        body.dark-mode .stat-card {
-            background-color: #2c2c2c;
-            border-color: #444;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        body.dark-mode .stat-title {
-            color: #b0bec5;
-        }
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            outline: none;
         }
     </style>
 </head>
@@ -97,7 +66,6 @@
 
 <header>
     <h1>Wood Pellets Price Tracker</h1>
-    <button class="theme-toggle" id="theme-toggle" title="Toggle Dark Mode">🌙</button>
 </header>
 
 <div class="container">
@@ -122,37 +90,7 @@
 </div>
 
 <script>
-    const themeToggle = document.getElementById('theme-toggle');
-    const body = document.body;
-
-    if (localStorage.getItem('theme') === 'dark') {
-        body.classList.add('dark-mode');
-        themeToggle.textContent = '☀️';
-    }
-
-    themeToggle.addEventListener('click', () => {
-        body.classList.toggle('dark-mode');
-        const isDark = body.classList.contains('dark-mode');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        themeToggle.textContent = isDark ? '☀️' : '🌙';
-        updateChartTheme(isDark);
-    });
-
-    function updateChartTheme(isDark) {
-        if (typeof chart !== 'undefined') {
-            const textColor = isDark ? '#ffffff' : '#666';
-            const gridColor = isDark ? '#444' : '#ecf0f1';
-            
-            chart.options.plugins.legend.labels.color = textColor;
-            chart.options.scales.y.ticks.color = textColor;
-            chart.options.scales.x.ticks.color = textColor;
-            chart.options.scales.y.title.color = textColor;
-            chart.options.scales.y.grid.color = gridColor;
-            chart.update();
-        }
-    }
-
-    const chartData = {"BalticWoodTrade": {"2026-03-25": 258.38}, "BalticWoodTrade - GABBY": {"2026-03-25": 263.25}, "BalticWoodTrade - GABBY PLUS": {"2026-03-25": 258.38}, "Stali": {"2026-03-25": 254.99}};
+    const chartData = {"BalticWoodTrade": {"2026-03-25": 258.38}, "BalticWoodTrade - GABBY": {"2026-03-25": 263.25, "2026-03-28": 263.25}, "BalticWoodTrade - GABBY PLUS": {"2026-03-25": 258.38, "2026-03-28": 258.38}, "Stali": {"2026-03-25": 254.99, "2026-03-28": 254.99}};
     
     // Sort dates
     const allDates = new Set();
@@ -188,12 +126,10 @@
     if(lastGabby) document.getElementById('gabby-val').innerText = lastGabby + ' €';
     if(lastStali) document.getElementById('stali-val').innerText = lastStali + ' €';
 
-    const isDarkInit = document.body.classList.contains('dark-mode');
-    const textColorInit = isDarkInit ? '#ffffff' : '#666';
-    const gridColorInit = isDarkInit ? '#444' : '#ecf0f1';
+    Chart.defaults.color = '#e0e0e0';
 
     const ctx = document.getElementById('priceChart').getContext('2d');
-    const chart = new Chart(ctx, {
+    new Chart(ctx, {
         type: 'line',
         data: {
             labels: dates,
@@ -248,19 +184,17 @@
                     }
                 },
                 legend: {
-                    labels: { color: textColorInit, font: { size: 14 } }
+                    labels: { font: { size: 14 } }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: false,
-                    title: { display: true, text: 'Price (€)', color: textColorInit },
-                    grid: { color: gridColorInit },
-                    ticks: { color: textColorInit }
+                    title: { display: true, text: 'Price (€)' },
+                    grid: { color: '#444' }
                 },
                 x: {
-                    grid: { display: false },
-                    ticks: { color: textColorInit }
+                    grid: { display: false }
                 }
             }
         }

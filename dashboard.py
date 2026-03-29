@@ -11,8 +11,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7fa;
-            color: #333;
+            background-color: #121212;
+            color: #e0e0e0;
             margin: 0;
             padding: 0;
             display: flex;
@@ -20,22 +20,22 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             align-items: center;
         }
         header {
-            background-color: #2c3e50;
+            background-color: #1f2937;
             color: white;
             width: 100%;
             padding: 20px 0;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
         }
         h1 { margin: 0; font-size: 24px; }
         .container {
             width: 90%;
             max-width: 1000px;
             margin: 40px auto;
-            background: white;
+            background: #1e1e1e;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
         }
         .stats {
             display: flex;
@@ -45,19 +45,19 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             gap: 15px;
         }
         .stat-card {
-            background: #fdfdfd;
-            border: 1px solid #eee;
+            background: #2d2d2d;
+            border: 1px solid #444;
             border-radius: 8px;
             padding: 20px;
             flex: 1;
             min-width: 200px;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
             transition: transform 0.2s;
         }
         .stat-card:hover { transform: translateY(-2px); }
-        .stat-title { font-size: 14px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 1px;}
-        .stat-value { font-size: 32px; font-weight: bold; color: #2ecc71; margin-top: 10px;}
+        .stat-title { font-size: 14px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;}
+        .stat-value { font-size: 32px; font-weight: bold; color: #4ade80; margin-top: 10px;}
         .chart-container {
             position: relative;
             height: 50vh;
@@ -129,6 +129,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     if(lastGabby) document.getElementById('gabby-val').innerText = lastGabby + ' €';
     if(lastStali) document.getElementById('stali-val').innerText = lastStali + ' €';
 
+    Chart.defaults.color = '#e0e0e0';
+
     const ctx = document.getElementById('priceChart').getContext('2d');
     new Chart(ctx, {
         type: 'line',
@@ -192,7 +194,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 y: {
                     beginAtZero: false,
                     title: { display: true, text: 'Price (€)' },
-                    grid: { color: '#ecf0f1' }
+                    grid: { color: '#444' }
                 },
                 x: {
                     grid: { display: false }
