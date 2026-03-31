@@ -1,2 +1,4 @@
 requests
 beautifulsoup4
+pywin32
+schedule
