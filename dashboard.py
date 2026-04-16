@@ -58,6 +58,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         .stat-card:hover { transform: translateY(-2px); }
         .stat-title { font-size: 14px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;}
         .stat-value { font-size: 32px; font-weight: bold; color: #4ade80; margin-top: 10px;}
+        .stat-sub { font-size: 14px; color: #888; margin-top: 6px; }
+        .bundle-note { font-size: 13px; color: #888; text-align: center; margin-bottom: 16px; line-height: 1.4; }
         .chart-container {
             position: relative;
             height: 50vh;
@@ -72,18 +74,22 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </header>
 
 <div class="container">
+    <p class="bundle-note">Prices shown are for 65 bags. Per-bag amounts divide the listed total by 65.</p>
     <div class="stats">
         <div class="stat-card">
             <div class="stat-title">GABBY PLUS (BWT)</div>
             <div class="stat-value" id="gabbyplus-val">-- €</div>
+            <div class="stat-sub" id="gabbyplus-per">--</div>
         </div>
         <div class="stat-card">
             <div class="stat-title">GABBY (BWT)</div>
             <div class="stat-value" id="gabby-val">-- €</div>
+            <div class="stat-sub" id="gabby-per">--</div>
         </div>
         <div class="stat-card">
             <div class="stat-title">Staļi</div>
             <div class="stat-value" id="stali-val">-- €</div>
+            <div class="stat-sub" id="stali-per">--</div>
         </div>
     </div>
 
@@ -94,7 +100,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
 <script>
     const chartData = {CHART_DATA};
-    
+    const BAGS_PER_ORDER = 65;
+
     // Sort dates
     const allDates = new Set();
     Object.values(chartData).forEach(prodData => {
@@ -125,9 +132,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     const lastGabby = gabbyData.filter(v => v !== null).pop();
     const lastStali = staliData.filter(v => v !== null).pop();
     
-    if(lastGabbyPlus) document.getElementById('gabbyplus-val').innerText = lastGabbyPlus + ' €';
-    if(lastGabby) document.getElementById('gabby-val').innerText = lastGabby + ' €';
-    if(lastStali) document.getElementById('stali-val').innerText = lastStali + ' €';
+    if(lastGabbyPlus) {
+        document.getElementById('gabbyplus-val').innerText = lastGabbyPlus + ' €';
+        document.getElementById('gabbyplus-per').innerText = (lastGabbyPlus / BAGS_PER_ORDER).toFixed(2) + ' € / bag';
+    }
+    if(lastGabby) {
+        document.getElementById('gabby-val').innerText = lastGabby + ' €';
+        document.getElementById('gabby-per').innerText = (lastGabby / BAGS_PER_ORDER).toFixed(2) + ' € / bag';
+    }
+    if(lastStali) {
+        document.getElementById('stali-val').innerText = lastStali + ' €';
+        document.getElementById('stali-per').innerText = (lastStali / BAGS_PER_ORDER).toFixed(2) + ' € / bag';
+    }
 
     Chart.defaults.color = '#e0e0e0';
 
@@ -182,7 +198,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return context.dataset.label + ': ' + context.parsed.y + ' €';
+                            const y = context.parsed.y;
+                            if (y == null) return context.dataset.label + ': —';
+                            const perBag = (y / BAGS_PER_ORDER).toFixed(2);
+                            return context.dataset.label + ': ' + y + ' € (65 bags), ' + perBag + ' € / bag';
                         }
                     }
                 },
@@ -193,7 +212,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             scales: {
                 y: {
                     beginAtZero: false,
-                    title: { display: true, text: 'Price (€)' },
+                    title: { display: true, text: 'Price for 65 bags (€)' },
                     grid: { color: '#444' }
                 },
                 x: {
